@@ -6,9 +6,12 @@ import com.example.shortener.model.Redirection;
 import com.example.shortener.model.RedirectionNotFoundException;
 import com.example.shortener.model.RedirectionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
+import static com.example.shortener.ShortenerApplication.garbage;
 
 @Service
 public class UrlShortenerService {
@@ -17,13 +20,22 @@ public class UrlShortenerService {
     @Autowired
     private RandomKeyGen gen;
 
+    @Value("${show.memory.leakage}")
+    boolean showMemoryLeakage;
+
     private int shortKeySize = 3;
     private String appUrl = "http://localhost:8080";
 
 
     public String shorten(String longUrl) {
         String shortKey = gen.generateKey(shortKeySize);
-        repo.save(new Redirection(longUrl, shortKey));
+        Redirection redirection = new Redirection(longUrl.intern(), shortKey.intern());
+        repo.save(redirection);
+
+        if(showMemoryLeakage) {
+            garbage.add(redirection);
+        }
+
         return appUrl + "/" + shortKey;
     }
 
