@@ -24,7 +24,15 @@ public class UrlShortenerService {
     boolean showMemoryLeakage;
 
     private int shortKeySize = 3;
-    private String appUrl = "http://localhost:8080";
+
+    @Value("${application.domain}")
+    private String appDomain = "localhost";
+
+    @Value("${application.protocol}")
+    private String protocol = "http";
+
+    @Value("${server.port}")
+    private String serverPort;
 
 
     public String shorten(String longUrl) {
@@ -36,7 +44,7 @@ public class UrlShortenerService {
             garbage.add(redirection);
         }
 
-        return appUrl + "/" + shortKey;
+        return protocol + "://" + appDomain + ":" + serverPort + "/" + shortKey;
     }
 
     public Redirection resolve(String shortKey) throws RedirectionNotFoundException {
