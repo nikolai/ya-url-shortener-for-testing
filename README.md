@@ -10,5 +10,10 @@ This will receive short URL in a form of: `{"shortUrl":"http://localhost:8080/hn
 
 ## Experimental performance problems
 Modify [application properties file](./src/main/resources/application.properties) for this step. Send request `curl -X POST -d "@create-req.json" -H "Content-Type: application/json" http://localhost:8080/create`
-1. change property show.memory.leakage=true for showing memory leakage problem
-2. change property spring.datasource.hikari.maximumPoolSize=1 for showing lack of db connections
+Some useful properties for performance problems demonstration:
+0. show.memory.leakage
+0. show.bad.synchronization - unnecessary synchronizations 
+0. show.deadlock
+0. spring.datasource.hikari.maximumPoolSize=1 - to show the lack of database connections
+0. server.tomcat.max-threads=1 - to show the lack of working threads
+0. internStrings=true - to eliminate string pollution problem
