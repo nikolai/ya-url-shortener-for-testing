@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -61,6 +62,13 @@ public class UrlShortenerService {
     private long lastGarbageForOldGenCleanupTime = System.currentTimeMillis();
     private long garbageForOldGenCleanupPeriodMs = 60000;
 
+    @Autowired
+    private DynConfService dynConfService;
+
+    @PostConstruct
+    void postConstruct() {
+        dynConfService.addBean(this);
+    }
 
     public String shorten(String longUrl) {
         String shortKey = gen.generateKey(shortKeySize);
