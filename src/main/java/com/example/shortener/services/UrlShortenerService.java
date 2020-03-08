@@ -29,13 +29,13 @@ public class UrlShortenerService {
     private RandomKeyGen gen;
 
     @Value("${show.memory.leakage}")
-    boolean showMemoryLeakage;
+    Boolean showMemoryLeakage;
 
     @Value("${show.unnecessary.synchronization}")
-    boolean showUnnecessarySynchronization;
+    Boolean showUnnecessarySynchronization;
 
     @Value("${shortKeySize}")
-    private int shortKeySize = 3;
+    private Integer shortKeySize = 3;
 
     @Value("${application.domain}")
     private String appDomain = "localhost";
@@ -47,13 +47,13 @@ public class UrlShortenerService {
     private String serverPort;
 
     @Value("${internStrings}")
-    private boolean internStrings;
+    private Boolean internStrings;
 
     @Value("${show.deadlock}")
-    private boolean showDeadlock;
+    private Boolean showDeadlock;
 
     @Value("${workThreadSleepTimeMs}")
-    private long workThreadSleepTimeMs;
+    private Long workThreadSleepTimeMs;
 
     @Value("${showOldGenEating}")
     private boolean showOldGenEating;
@@ -65,10 +65,13 @@ public class UrlShortenerService {
     public String shorten(String longUrl) {
         String shortKey = gen.generateKey(shortKeySize);
 
-        Lock deadlockable = null;
+        Lock deadlockable1 = null;
+        Lock deadlockable2 = null;
         if (showDeadlock) {
-            deadlockable = resourcesForDeadlock.get(ThreadLocalRandom.current().nextInt(resourcesForDeadlock.size()));
-            deadlockable.lock();
+            deadlockable1 = resourcesForDeadlock.get(ThreadLocalRandom.current().nextInt(resourcesForDeadlock.size()));
+            deadlockable2 = resourcesForDeadlock.get(ThreadLocalRandom.current().nextInt(resourcesForDeadlock.size()));
+            deadlockable1.lock();
+            deadlockable2.lock();
         }
 
         if (showUnnecessarySynchronization) {
@@ -95,7 +98,10 @@ public class UrlShortenerService {
             }
         } finally {
             if (showUnnecessarySynchronization) lockForBadSynchronization.unlock();
-            if (deadlockable != null) deadlockable.unlock();
+            if (deadlockable1 != null) {
+                deadlockable1.unlock();
+                deadlockable2.unlock();
+            }
         }
         return protocol + "://" + appDomain + ":" + serverPort + "/" + shortKey;
     }
