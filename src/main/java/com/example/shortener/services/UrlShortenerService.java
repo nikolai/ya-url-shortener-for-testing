@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.example.shortener.ShortenerApplication.garbage;
+import static com.example.shortener.ShortenerApplication.garbageForOldGen;
 
 @Service
 public class UrlShortenerService {
@@ -31,6 +34,7 @@ public class UrlShortenerService {
     @Value("${show.unnecessary.synchronization}")
     boolean showUnnecessarySynchronization;
 
+    @Value("${shortKeySize}")
     private int shortKeySize = 3;
 
     @Value("${application.domain}")
@@ -51,13 +55,19 @@ public class UrlShortenerService {
     @Value("${workThreadSleepTimeMs}")
     private long workThreadSleepTimeMs;
 
-    ThreadLocalRandom random = ThreadLocalRandom.current();
+    @Value("${showOldGenEating}")
+    private boolean showOldGenEating;
+
+    private long lastGarbageForOldGenCleanupTime = System.currentTimeMillis();
+    private long garbageForOldGenCleanupPeriodMs = 60000;
+
+
     public String shorten(String longUrl) {
         String shortKey = gen.generateKey(shortKeySize);
 
         Lock deadlockable = null;
         if (showDeadlock) {
-            deadlockable = resourcesForDeadlock.get(random.nextInt(resourcesForDeadlock.size()));
+            deadlockable = resourcesForDeadlock.get(ThreadLocalRandom.current().nextInt(resourcesForDeadlock.size()));
             deadlockable.lock();
         }
 
@@ -75,6 +85,13 @@ public class UrlShortenerService {
             repo.save(redirection);
             if (showMemoryLeakage) {
                 garbage.add(redirection);
+            }
+
+            if (showOldGenEating) {
+                garbageForOldGen.add(redirection);
+                if ((System.currentTimeMillis() - lastGarbageForOldGenCleanupTime) > garbageForOldGenCleanupPeriodMs) {
+                    garbageForOldGen.clear();
+                }
             }
         } finally {
             if (showUnnecessarySynchronization) lockForBadSynchronization.unlock();
