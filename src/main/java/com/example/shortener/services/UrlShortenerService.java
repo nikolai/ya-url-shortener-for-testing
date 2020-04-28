@@ -92,7 +92,7 @@ public class UrlShortenerService {
             } catch (InterruptedException e) {
                 throw new RuntimeException("Interrupted, sorry!");
             }
-            Redirection redirection = new Redirection(internOrNot(longUrl.intern()), internOrNot(shortKey.intern()));
+            Redirection redirection = new Redirection(internOrNot(longUrl), internOrNot(shortKey));
             repo.save(redirection);
             if (showMemoryLeakage) {
                 garbage.add(redirection);
