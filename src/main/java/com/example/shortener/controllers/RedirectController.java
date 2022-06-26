@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 @Controller
-public class RedirectController {
+public class RedirectController extends BaseController {
 
     @Autowired
     UrlShortenerService shortener;
@@ -24,15 +24,9 @@ public class RedirectController {
     @RequestMapping("/{shortKey}")
     public void doRedirect(@PathVariable String shortKey, HttpServletResponse response) {
         Redirection redirection = shortener.resolve(shortKey);
-        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", redirection.getLongUrl());
     }
 
-    @ExceptionHandler(RedirectionNotFoundException.class)
-    void handle(HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()))) {
-            bw.write("oh no");
-        }
-    }
+
 }

@@ -1,21 +1,29 @@
 package com.example.shortener.model;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
-@Table(name = "Redirections")
+@Table(name = "redirections")
 public class Redirection {
-    private String longUrl;
     @Id
     private String shortKey;
+    private String secretKey;
 
-    public Redirection() {
-    }
+    private String longUrl;
 
-    public Redirection(String longUrl, String shortKey) {
+    private Date creationDate;
+    private long usageCount;
+
+    public Redirection() {} // needed by hibernate
+
+    public Redirection(String longUrl, String shortKey, String secretKey) {
         this.longUrl = longUrl;
         this.shortKey = shortKey;
+        this.secretKey = secretKey;
+        this.creationDate = new Date();
     }
 
     public void setLongUrl(String longUrl) {
@@ -32,5 +40,17 @@ public class Redirection {
 
     public String getShortKey() {
         return shortKey;
+    }
+
+    public void incrementUsageCount() {
+        usageCount++;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public long getUsageCount() {
+        return usageCount;
     }
 }
