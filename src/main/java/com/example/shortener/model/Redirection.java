@@ -1,6 +1,8 @@
 package com.example.shortener.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -9,7 +11,12 @@ import java.util.Date;
 @Table(name = "redirections")
 public class Redirection {
     @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column(unique=true)
     private String shortKey;
+    @Column(unique=true)
     private String secretKey;
 
     private String longUrl;

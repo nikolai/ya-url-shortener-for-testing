@@ -20,7 +20,7 @@ public class UrlShortenerService {
     private Integer shortKeySize = 3;
 
     @Value("${adminKeySize}")
-    private Integer adminKeySize = 2;
+    private Integer adminKeySize = 3;
 
     @Value("${application.domain}")
     private String appDomain = "localhost";
@@ -54,7 +54,7 @@ public class UrlShortenerService {
 
 
     public Redirection resolve(String shortKey) throws RedirectionNotFoundException {
-        Optional<Redirection> redirectionO = repo.findById(shortKey);
+        Optional<Redirection> redirectionO = repo.findByShortKey(shortKey);
         if (redirectionO.isPresent()) {
             Redirection redirection = redirectionO.get();
             redirection.incrementUsageCount();
