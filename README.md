@@ -9,20 +9,20 @@
 ```
 {
     "shortUrl":"http://localhost:8080/hnh",
-    "secretKey": "abc"
+    "secretKey": "abcfjiedis"
 }
 ```
 Где `shortUrl` - адрес, переход по которому, осуществит перенаправление запроса на оригинальный адрес, `secretKey` - ключ для операций администрирования.
 3. Откройте короткий URL `http://localhost:8080/hnh` в браузере и запрос будет перенаправлен на оригинальный URL из [create-req.json](./create-req.json).
 
-4. Отправьте `GET` HTTP-запрос с полученным ранее `secretKey` на адрес `http://localhost:8080/admin/abc`, в ответ придет статистика использования короткого URL в подобном JSON:
+4. Отправьте `GET` HTTP-запрос с полученным ранее `secretKey` на адрес `http://localhost:8080/admin/abcfjiedis`, в ответ придет статистика использования короткого URL в подобном JSON:
 ```
 {
     "creationDate": "2022-06-26T22:06:11.876+00:00",
     "usageCount": 1
 }
 ```
-5. Отправьте `DELETE` HTTP-запрос на `http://localhost:8080/admin/abc` чтобы удалить созданное ранее правило перенаправления.
+5. Отправьте `DELETE` HTTP-запрос на `http://localhost:8080/admin/abcfjiedis` чтобы удалить созданное ранее правило перенаправления.
 
 ## Задание
 Изучите код приложения и напишите модульные и интеграционные (API) тесты на все опубликованные точки HTTP API (см. java package `com.example.shortener.controllers`). 

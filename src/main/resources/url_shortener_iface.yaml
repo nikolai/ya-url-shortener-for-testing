@@ -1,0 +1,68 @@
+openapi: "3.0.2"
+info:
+    title: UrlShortener API
+    version: "1.0"
+servers:
+    - url: http://localhost:8080/
+components:
+    schemas:
+        error:
+            type: object
+            properties:
+                error:
+                    description: error message
+                    type: string
+                    required: true
+paths:
+    /make_shorter:
+        post:
+            description: creates short url
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                longUrl:
+                                    description: url to make shorter
+                                    type: string
+                                    default: https://yandex.ru
+                                vipKey:
+                                    description: short key to be mapped to long url
+                                    type: string
+                                    required: false
+                                timeToLive:
+                                    description: |
+                                        number of time-units this short url is going to be active. 
+                                        Maximum value must not be more than 48 hours
+                                    type: integer
+                                    required: false
+                                    default: 10
+                                timeToLiveUnit:
+                                    description: time unit for timeToLive parameter
+                                    enum:
+                                        - SECONDS
+                                        - MINUTES
+                                        - HOURS
+                                        - DAYS
+                                    required: false
+                                    default: HOURS
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    shortUrl:
+                                        type: string
+                                    secretKey:
+                                        type: string
+                '400':
+                    description: invalid input parameters
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/error"
